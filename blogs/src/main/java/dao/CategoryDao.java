@@ -4,29 +4,21 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import vo.*;
 import java.util.*;
 import dao.*;
 
 public class CategoryDao {
-	public ArrayList<HashMap<String, Object>> categoryList(String categoryName) throws Exception {
+	public ArrayList<HashMap<String, Object>> categoryList(String categoryName) {
 		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
-		
-		
-		Class.forName("org.mariadb.jdbc.Driver");
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		
-		String dburl = "jdbc:mariadb://localhost:3306/blog";
-		String dbuser = "root";
-		String dbpw = "java1234";
-		
-		conn = DriverManager.getConnection(dburl, dbuser, dbpw); 
-		System.out.println(conn +"<--conn");	
-		
 		String sql = "SELECT category_name categoryName, COUNT(*) cnt FROM board GROUP BY category_name";
+		try {
+		conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/blog","root","java1234");
 		stmt = conn.prepareStatement(sql);
 		
 		rs = stmt.executeQuery();
@@ -37,11 +29,16 @@ public class CategoryDao {
 			map.put("cnt", rs.getString("cnt"));
 			map.put("categoryName", rs.getString("categoryName"));
 			list.add(map); // 리스트에 저장
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+			conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		 
-		rs.close();
-		stmt.close();
-		conn.close();
 			
 		return list;
 	}

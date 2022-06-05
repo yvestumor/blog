@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 import vo.Board;
@@ -12,20 +13,15 @@ import dao.CategoryDao;
 
 public class BoardDao {
 	public BoardDao() {}
-	public  ArrayList<Board> selectBoardListByPage(int beginRow, int rowPerPage ,String categoryName) throws Exception {
+	public  ArrayList<Board> selectBoardListByPage(int beginRow, int rowPerPage ,String categoryName) {
 	ArrayList<Board> list = new ArrayList<Board>();
-	// guestbook 10행 반환되도록 구현
-	Class.forName("org.mariadb.jdbc.Driver");
 	//데이터베이스 자원 가져옴
 	Connection conn = null;
 	PreparedStatement stmt = null;
 	ResultSet rs = null;
 	
-	
-	String dburl = "jdbc:mariadb://localhost:3306/blog"; //db주소
-	String dbuser = "root"; //사용자이름
-	String dbpw = "java1234"; //비번
-	conn = DriverManager.getConnection(dburl, dbuser, dbpw);
+	try {
+	conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/blog","root","java1234");
 	
 	String sql = null;
 	if(categoryName == null) {
@@ -50,10 +46,15 @@ public class BoardDao {
 		b.setCreateDate(rs.getString("createDate"));
 		list.add(b);
 	}
-	rs.close();
-	stmt.close();
-	conn.close();
-
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	return list;
 
 	}
@@ -62,97 +63,112 @@ public class BoardDao {
 	
 	
 	
-public int selectBoardTotalRow() throws Exception{
-	int total = 0;
-	Class.forName("org.mariadb.jdbc.Driver");
+public int selectBoardTotalRow(String categoryName) {
+	int totalCount = 0;
 	// 데이터베이스 자원 준비
 	Connection conn = null;
 	PreparedStatement stmt = null;
 	ResultSet rs = null;
-			
-	String dburl = "jdbc:mariadb://localhost:3306/blog"; //db주소
-	String dbuser = "root"; //사용자이름
-	String dbpw = "java1234"; // 비밀번호
 	
-	String sql = "SELECT COUNT(*) cnt FROM board" ;
-	conn = DriverManager.getConnection(dburl, dbuser, dbpw); 
+	String sql = null;
+	
+	try {
+	conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/blog","root","java1234");
+	if (categoryName.equals(null)) {
+		sql = "SELECT COUNT(*) cnt FROM board" ;
+		stmt = conn.prepareStatement(sql);
+		rs = stmt.executeQuery();
+	} else {
+		sql = "SELECT COUNT(*) cnt FROM board WHERE category_name = ?";
 	stmt = conn.prepareStatement(sql);
+	stmt.setString(1,categoryName);
 	rs = stmt.executeQuery();
+		}
 	if(rs.next()) {
-		total = rs.getInt("cnt");
+		totalCount = rs.getInt("cnt");
+		}
+	} catch (Exception e) {
+		e.printStackTrace();
+	} finally {
+		try {
+			conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
-	
-	return total;
+	return totalCount;
 }
-	public ArrayList<String> insertBoardCategory() throws Exception { //insertBoardForm
+	public ArrayList<String> insertBoardCategory(){ //insertBoardForm
 		ArrayList<String> list = new ArrayList<String>();
-		Class.forName("org.mariadb.jdbc.Driver");
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 		
-		String dburl = "jdbc:mariadb://localhost:3306/blog";
-		String dbuser = "root";
-		String dbpw = "java1234";
-		
-		conn = DriverManager.getConnection(dburl, dbuser, dbpw); 
-		
 		String sql = "select category_name categoryName from category order by category_name asc"; //쿼리문 변수 만들기
+		try {
+		conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/blog","root","java1234");
 		stmt = conn.prepareStatement(sql);
 		rs = stmt.executeQuery();
 		
 		while(rs.next()) {
 			list.add(rs.getString("CategoryName"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+			conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		
-		rs.close();
-		stmt.close();
-		conn.close();
 		
 		return list;
 		
 	}
-	public void insertBoard(Board board) throws Exception { //insertBoardAction
-		Class.forName("org.mariadb.jdbc.Driver");
+	public int insertBoard(Board board) { //insertBoardAction
+		int row = 0;
 		Connection conn = null;
 		PreparedStatement stmt = null;
-		
-		
-		String dburl = "jdbc:mariadb://localhost:3306/blog";
-		String dbuser = "root";
-		String dbpw = "java1234";
-		
+
 		String sql ="INSERT INTO board(category_name, board_title, board_content, board_pw, create_date, update_date) VALUES (?,?,?,?,NOW(),NOW())";
-		conn = DriverManager.getConnection(dburl, dbuser, dbpw);
+		try {
+		conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/blog","root","java1234");
 		stmt = conn.prepareStatement(sql); //sql 구문 실행 쿼리저장된 변수대입
 		stmt.setString(1,board.getCategoryName()); // ? 1번쨰 값 categoryName
 		stmt.setString(2,board.getBoardTitle()); // ? 2번째 값 boardTitle
 		stmt.setString(3,board.getBoardContent()); // ? 3번째 값 boardContent
 		stmt.setString(4, board.getBoardPw()); // ? 4번째값 boardPw
 		System.out.println(stmt + "<--stmt"); // 디버깅
-		int row = stmt.executeUpdate();
+		row = stmt.executeUpdate();
 		if(row == 1) {
 			System.out.println("입력성공");
 		} else {
 			System.out.println("입력실패");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		stmt.close();
-		conn.close();
 		
+		return row;
 	}
-	public int deleteBoard(int boardNo, String boardPw) throws Exception { //deleteBoardAction
+	public int deleteBoard(int boardNo, String boardPw) { //deleteBoardAction
 		int row = 0;
-		Class.forName("org.mariadb.jdbc.Driver");
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		
-		String dburl = "jdbc:mariadb://localhost:3306/blog";
-		String dbuser = "root";
-		String dbpw = "java1234";
-		conn = DriverManager.getConnection(dburl, dbuser, dbpw); 
-		System.out.println(conn +"<--conn");
 		
-		String sql = "delete from board where board_no=? and board_pw=? "; 
+		String sql = "DELTE FROM board "
+				+ "        WHERE board_no=? "
+				+ "          AND board_pw=? "; 
+		try {
+		conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/blog","root","java1234");
 		stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, boardNo);
 		stmt.setString(2, boardPw);
@@ -162,33 +178,43 @@ public int selectBoardTotalRow() throws Exception{
 			System.out.println("삭제성공");
 		} else {
 			System.out.println("삭제실패");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		
-		stmt.close();
-		conn.close();
 		
 		return row;
 	}
-	public ArrayList<Board> selectBoardOne(int boardNo) throws Exception {
+	public ArrayList<Board> selectBoardOne(int boardNo){
 		ArrayList<Board> list = new ArrayList<Board>();
-		
-		Class.forName("org.mariadb.jdbc.Driver");
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
 				
-		String dburl = "jdbc:mariadb://localhost:3306/blog";
-		String dbuser = "root";
-		String dbpw = "java1234";
 		
-		conn = DriverManager.getConnection(dburl, dbuser, dbpw); 
-		String sql = "select board_no boardNo, category_name categoryName, board_title boardTitle, board_content boardContent, create_date createDate, update_date updateDate from board where board_no=?";
+		String sql = "SELECT board_no boardNo"
+				+ "         ,category_name categoryName"
+				+ "         ,board_title boardTitle"
+				+ "         ,board_content boardContent"
+				+ "         ,create_date createDate"
+				+ "         ,update_date updateDate "
+				+ "     FROM board WHERE board_no=?";
+		
+		try {
+		conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/blog","root","java1234");
+		
 		stmt =conn.prepareStatement(sql);
 		stmt.setInt(1, boardNo);
 		rs = stmt.executeQuery();
 		
-		if(rs.next()) {
-		 Board b = new Board();
+		while(rs.next()) {
+			Board b = new Board();
 			b.setBoardNo(rs.getInt("boardNo"));
 			b.setCategoryName(rs.getString("categoryName"));
 			b.setBoardTitle(rs.getString("boardTitle"));
@@ -196,12 +222,16 @@ public int selectBoardTotalRow() throws Exception{
 			b.setCreateDate(rs.getString("createDate"));
 			b.setUpdateDate(rs.getString("updateDate"));
 			list.add(b);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		
-		rs.close();
-		stmt.close();
-		conn.close();
-		
 		return list;
 	}
 }
