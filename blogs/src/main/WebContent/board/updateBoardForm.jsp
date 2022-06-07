@@ -12,7 +12,7 @@ Board board = new Board();
 board = boardDao.selectBoardOne(boardNo); // 수정할board호출 
 
 CategoryDao categoryDao = new CategoryDao();
- ArrayList<String> categoryList = categoryDao.selectBoardCategory();
+ ArrayList<String> categoryList = categoryDao.selectCategory();
 
 %>
 <!DOCTYPE html>

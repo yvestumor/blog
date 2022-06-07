@@ -5,7 +5,6 @@
 		<a   class="btn btn-outline-warning"href="<%=request.getContextPath()%>/board/boardList.jsp">게시판</a>
 		<a   class="btn btn-outline-warning"href="<%=request.getContextPath()%>/photo/photoList.jsp">사진</a>
 		<a   class="btn btn-outline-warning"href="<%=request.getContextPath()%>/guestbook/guestbookList.jsp">방명록</a>
-		<a   class="btn btn-outline-warning"href="<%=request.getContextPath()%>">PDF자료실</a>
 </div>
 <!DOCTYPE html>
 <html>
