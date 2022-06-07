@@ -7,7 +7,7 @@
 	BoardDao boardDao = new BoardDao();
 	CategoryDao categoryDao = new CategoryDao();
 	
-
+	
 	// boardList페이지 실행하면 최근 10개의 목록을 보여주고 1page로 설정
 	int currentPage = 1; // 현재 페이지 기본값
 
@@ -16,7 +16,10 @@
 	}
 	System.out.println(currentPage + "  <-- currentPage");
 	
-	String categoryName = request.getParameter("categoryName");
+	String categoryName = "";
+	if(request.getParameter("categoryName") != null) {
+		categoryName = request.getParameter("categoryName");
+	}
 	
 	
 	
@@ -38,7 +41,7 @@
 	
 	//String categoryName = request.getParameter("categoryName");	
 
-	ArrayList<HashMap<String, Object>> categoryList = categoryDao.categoryList(categoryName);
+	ArrayList<HashMap<String, Object>> categoryList = categoryDao.boardcategoryList();
 	ArrayList<Board> list = boardDao.selectBoardListByPage(beginRow, rowPerPage, categoryName);
 	/*
 		SELECT category_name categoryName, COUNT(*) cnt
@@ -49,7 +52,7 @@
 	
 	
 	int totalRow = 0; // select count(*) from board; -> 전체 행의 개수
-	totalRow = boardDao.selectBoardTotalRow();
+	totalRow = boardDao.selectBoardTotalRow(categoryName);
 	
 	int lastPage = 0;
 	if(totalRow % rowPerPage == 0) {

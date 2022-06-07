@@ -11,7 +11,7 @@ import java.util.*;
 import dao.*;
 
 public class CategoryDao {
-	public ArrayList<HashMap<String, Object>> categoryList(String categoryName) {
+	public ArrayList<HashMap<String, Object>> boardcategoryList() {
 		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String, Object>>();
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -43,33 +43,7 @@ public class CategoryDao {
 		return list;
 	}
 	
-	public ArrayList<String> categoryselectOne() throws Exception {
-		ArrayList<String> list = new ArrayList <String>();
-		
-		Class.forName("org.mariadb.jdbc.Driver");
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		
-		String dburl = "jdbc:mariadb://localhost:3306/blog";
-		String dbuser = "root";
-		String dbpw = "java1234";
-		
-		conn = DriverManager.getConnection(dburl, dbuser, dbpw); 
-		String sql = "SELECT category_name categoryName from category";
-		stmt = conn.prepareStatement(sql);
-		rs = stmt.executeQuery();
-		
-		while(rs.next()) {
-			list.add(rs.getString("categoryName"));
-		}
-		rs.close();
-		stmt.close();
-		conn.close();
-	
-		return list;
-	}
-	public ArrayList<String> selectCategory(String categoryName) throws Exception {
+	public ArrayList<String> selectCategory() throws Exception {
 		ArrayList<String> list = new ArrayList<String>(); 
 		
 		Class.forName("org.mariadb.jdbc.Driver");

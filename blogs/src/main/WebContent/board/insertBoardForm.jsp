@@ -2,13 +2,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
 <%@ page import="java.util.*" %>
-<%@ page import="dao.BoardDao" %>
+<%@ page import="dao.CategoryDao" %>
 <%@ page import="vo.*" %>
 <% 
 	request.setCharacterEncoding("utf-8");
 
-	BoardDao boardDao = new BoardDao();
-	ArrayList<String> list = boardDao.insertBoardCategory();
+	CategoryDao categoryDao = new CategoryDao();
+	ArrayList<String> list = categoryDao. selectCategory();
 
 %>
 <!DOCTYPE html>

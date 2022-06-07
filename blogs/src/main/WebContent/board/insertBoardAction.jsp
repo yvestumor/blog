@@ -20,14 +20,15 @@
 	
 	// insertBoardFrom에서 받은값 변수로 저장
 	Board board = new Board();
-	board.categoryName = categoryName; //categoryName 
-	board.boardTitle = boardTitle; //boardTitle
-	board.boardContent = boardContent; // boardContent
-	board.boardPw = boardPw; //boardPw
+	board.setCategoryName(categoryName);//categoryName 
+	board.setBoardTitle(boardTitle); //boardTitle
+	board.setBoardContent(boardContent); // boardContent
+	board.setBoardPw(boardPw); //boardPw
 	
 	
-	BoardDao boardDao = new BoardDao();
-	boardDao.insertBoard(board);
+	BoardDao boardDao = new BoardDao(); // boardDao호출 
+	
+	boardDao.insertBoard(board); 
 	
 	response.sendRedirect(request.getContextPath()+"/board/boardList.jsp");
 %>

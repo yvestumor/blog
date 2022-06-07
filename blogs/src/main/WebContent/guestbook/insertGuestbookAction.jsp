@@ -19,9 +19,9 @@
 	
 	//요청값 가공해서 변수 만들기
 	Guestbook guestbook = new Guestbook();
-	guestbook.guestbookContent = guestbookContent;
-	guestbook.writer = writer;
-	guestbook.guestbookPw = guestbookPw;
+	guestbook.setGuestbookContent(guestbookContent);
+	guestbook.setWriter(writer);
+	guestbook.setGuestbookPw(guestbookPw);
 	
 	GuestbookDao guestbookDao = new GuestbookDao();
 	guestbookDao.insertGuestbook(guestbook); // insertGuestbook 메소드 호출		

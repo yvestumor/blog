@@ -16,9 +16,9 @@
 	
 	//데이터값 가공하기
 	Guestbook guestbook = new Guestbook();
-	guestbook.guestbookNo = guestbookNo;
-	guestbook.guestbookContent = guestbookContent;
-	guestbook.guestbookPw = guestbookPw;
+	guestbook.setGuestbookNo(guestbookNo);
+	guestbook.setGuestbookContent(guestbookContent);
+	guestbook.setGuestbookPw(guestbookPw);
 	
 	GuestbookDao guestbookDao = new GuestbookDao(); 
 	int row = guestbookDao.updateGuestbook(guestbook); //updateGuestbook메소드 호출
@@ -28,7 +28,7 @@
 		response.sendRedirect(request.getContextPath()+"/guestbook/guestbookList.jsp");
 	} else if (row == 0) { //수정실패할때
 		System.out.println("수정실패");
-		response.sendRedirect(request.getContextPath()+"/guestbook/deleteGuestbookForm.jsp?guestNo="+guestbook.guestbookNo);
+		response.sendRedirect(request.getContextPath()+"/guestbook/deleteGuestbookForm.jsp?guestNo="+ guestbookNo);
 	} else {// 알수없는 에러
 		System.out.println("에러");
 	}

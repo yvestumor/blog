@@ -24,7 +24,7 @@ public class BoardDao {
 	conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/blog","root","java1234");
 	
 	String sql = null;
-	if(categoryName == null) {
+	if(categoryName.equals("")) {
 	sql = "SELECT board_no boardNo, category_name categoryName, board_title boardTitle, create_date createDate FROM board ORDER BY create_date DESC LIMIT ?, ?";
 	stmt = conn.prepareStatement(sql);
 	stmt.setInt(1,beginRow); // 현재 페이지 위치
@@ -74,7 +74,7 @@ public int selectBoardTotalRow(String categoryName) {
 	
 	try {
 	conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/blog","root","java1234");
-	if (categoryName.equals(null)) {
+	if (categoryName.equals("")) {
 		sql = "SELECT COUNT(*) cnt FROM board" ;
 		stmt = conn.prepareStatement(sql);
 		rs = stmt.executeQuery();
@@ -98,34 +98,7 @@ public int selectBoardTotalRow(String categoryName) {
 	}
 	return totalCount;
 }
-	public ArrayList<String> insertBoardCategory(){ //insertBoardForm
-		ArrayList<String> list = new ArrayList<String>();
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		
-		String sql = "select category_name categoryName from category order by category_name asc"; //쿼리문 변수 만들기
-		try {
-		conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/blog","root","java1234");
-		stmt = conn.prepareStatement(sql);
-		rs = stmt.executeQuery();
-		
-		while(rs.next()) {
-			list.add(rs.getString("CategoryName"));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-			conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		return list;
-		
-	}
+	
 	public int insertBoard(Board board) { //insertBoardAction
 		int row = 0;
 		Connection conn = null;
@@ -191,8 +164,8 @@ public int selectBoardTotalRow(String categoryName) {
 		
 		return row;
 	}
-	public ArrayList<Board> selectBoardOne(int boardNo){
-		ArrayList<Board> list = new ArrayList<Board>();
+	public Board selectBoardOne(int boardNo){
+		Board b = null;
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
@@ -214,14 +187,13 @@ public int selectBoardTotalRow(String categoryName) {
 		rs = stmt.executeQuery();
 		
 		while(rs.next()) {
-			Board b = new Board();
+			b = new Board();
 			b.setBoardNo(rs.getInt("boardNo"));
 			b.setCategoryName(rs.getString("categoryName"));
 			b.setBoardTitle(rs.getString("boardTitle"));
 			b.setBoardContent(rs.getString("boardContent"));
 			b.setCreateDate(rs.getString("createDate"));
 			b.setUpdateDate(rs.getString("updateDate"));
-			list.add(b);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -232,7 +204,44 @@ public int selectBoardTotalRow(String categoryName) {
 				e.printStackTrace();
 			}
 		}
-		return list;
+		return b;
+	}
+	public int updateBoard(Board board) {
+		int row = 0;
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		String sql =  "UPDATE board SET "
+				+ "           category_name = ?"
+				+ "         , board_title = ?"
+				+ "         , board_content = ?"
+				+ "         , update_date = now() "
+				+ "     WHERE board_no = ? "
+				+ "       AND board_pw = ? ";
+		try {
+			conn = DriverManager.getConnection("jdbc:mariadb://localhost:3306/blog","root","java1234");
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, board.getCategoryName());
+			stmt.setString(2, board.getBoardTitle());
+			stmt.setString(3,board.getBoardContent());
+			stmt.setInt(4, board.getBoardNo());
+			stmt.setString(5, board.getBoardPw());
+			row = stmt.executeUpdate();
+			if (row == 1) {
+				System.out.println("BoardDao.UpdateBoard 수정 성공");
+			} else {
+				System.out.println("BoardDao.UpdateBoard 수정 실패");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return row;
 	}
 }
 

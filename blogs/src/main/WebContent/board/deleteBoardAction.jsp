@@ -11,10 +11,7 @@
 	String boardPw = request.getParameter("boardPw");
 	System.out.println(boardPw + " <-boardPw"); // 받은 password값 확인
 	
-	//Form에서 넘겨진 값을 가공하기
-	Board board = new Board();
-	board.boardNo = boardNo;
-	board.boardPw = boardPw;
+	
 	
 	BoardDao boardDao = new BoardDao();
 	int row = boardDao.deleteBoard(boardNo, boardPw);
@@ -22,7 +19,7 @@
 	
 	if(row == 0) { //삭제 실패
 		System.out.println("삭제 실패");
-		response.sendRedirect(request.getContextPath() +"/board/deleteBoardForm.jsp?boardNo="+board.boardNo);
+		response.sendRedirect(request.getContextPath() +"/board/deleteBoardForm.jsp?boardNo="+boardNo);
 	} else if(row == 1) { //삭제 성공
 		System.out.println("삭제 성공");
 		response.sendRedirect(request.getContextPath() + "/board/boardList.jsp");
